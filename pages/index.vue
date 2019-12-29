@@ -37,28 +37,29 @@ export default {
 
   methods: {
     onClick (x, y) {
+      console.log('現在地e:', x, y)
       this.board = JSON.parse(JSON.stringify(this.board))
       const { board, turn } = this
 
       const directions = [[-1, -1], [0, -1], [1, -1], [-1, 0], [1, 0], [-1, 1], [0, 1], [1, 1]]
-      const aroundCells = []
-      for (let i = 0; i < directions.length; i++) {
-        const _x = x + directions[i][0]
-        const _y = y + directions[i][1]
-        console.log(board[_y][_x])
 
-        if (_x >= 0 && _y >= 0) {
-          aroundCells.push(board[_y][_x])
-        } else {
-          aroundCells.push(0)
+      const aroundCells = directions.filter(
+        direction => board[y + direction[1]][x + direction[0]] === this.turn * -1
+      )
+
+      if (aroundCells.length > 0) {
+        console.log('そこには置けます。')
+        for (let i = 0; i < aroundCells.length; i++) {
+          console.log(aroundCells[i])
         }
+      } else {
+        console.log('そこには置けません。')
       }
 
-      aroundCells.findIndex(aroundCell => aroundCell === turn * -1)
+      console.log(aroundCells)
       board[y][x] = turn
 
       this.turn *= -1
-      console.log(x, y)
     }
   }
 }
