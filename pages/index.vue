@@ -43,20 +43,35 @@ export default {
 
       const directions = [[-1, -1], [0, -1], [1, -1], [-1, 0], [1, 0], [-1, 1], [0, 1], [1, 1]]
 
-      const aroundCells = directions.filter(
+      const directionsToGo = directions.filter(
         direction => board[y + direction[1]][x + direction[0]] === this.turn * -1
       )
+      console.log('directionsToGo' + directionsToGo)
 
-      if (aroundCells.length > 0) {
-        console.log('そこには置けます。')
-        for (let i = 0; i < aroundCells.length; i++) {
-          console.log(aroundCells[i])
+      function returnDisk (direction, step, turn) {
+        const _x = x + direction[0] * step
+        const _y = y + direction[1] * step
+        console.log(direction)
+        console.log(_x, _y, step, turn)
+        if (board[_y][_x] === turn * -1) {
+          step += 1
+          return returnDisk(direction, step, turn)
+        } else if (board[_y][_x] === turn && step > 1) {
+          return '最終地点は' + step + 'です'
+        } else {
+          return 'どこにも置けません'
         }
-      } else {
-        console.log('そこには置けません。')
       }
 
-      console.log(aroundCells)
+      console.log(returnDisk(directionsToGo[0], 1, this.turn))
+
+      // if (directionsToGo.length > 0) {
+      //   console.log('そこには置けます。')
+      //   const directionsToGo = directions.filter()
+      // } else {
+      //   console.log('そこには置けません。')
+      // }
+
       board[y][x] = turn
 
       this.turn *= -1
