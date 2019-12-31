@@ -13,6 +13,8 @@
         />
       </div>
     </template>
+    <p> {{ turn === 1 ? '黒' : '白' }}の番です </p>
+
   </div>
 </template>
 
@@ -44,33 +46,45 @@ export default {
       const directions = [[-1, -1], [0, -1], [1, -1], [-1, 0], [1, 0], [-1, 1], [0, 1], [1, 1]]
 
       const directionsToGo = directions.filter(
-        direction => board[y + direction[1]][x + direction[0]] === this.turn * -1
+        direction =>
+          x + direction[0] >= 0 &&
+          y + direction[1] >= 0 &&
+          x + direction[0] < 8 &&
+          y + direction[1] < 8 &&
+          board[y + direction[1]][x + direction[0]] === this.turn * -1
+      ).map(
+        direction => searchReturnDisk(direction, 1, this.turn)
       )
-      console.log('directionsToGo' + directionsToGo)
+      console.log(directionsToGo)
 
-      function returnDisk (direction, step, turn) {
-        const _x = x + direction[0] * step
-        const _y = y + direction[1] * step
-        console.log(direction)
-        console.log(_x, _y, step, turn)
-        if (board[_y][_x] === turn * -1) {
-          step += 1
-          return returnDisk(direction, step, turn)
-        } else if (board[_y][_x] === turn && step > 1) {
-          return '最終地点は' + step + 'です'
-        } else {
-          return 'どこにも置けません'
+      for (let i = 0; i < directionsToGo.length; i++) {
+        if (directionsToGo[i].length === 2) {
+          for (let step = 1; step < directionsToGo[i][1]; step++) {
+            const _x = x + directionsToGo[i][0][0] * step
+            const _y = y + directionsToGo[i][0][1] * step
+            console.log(x, _x, y, _y, this.turn)
+            board[_y][_x] = this.turn
+          }
         }
       }
 
-      console.log(returnDisk(directionsToGo[0], 1, this.turn))
+      function searchReturnDisk (direction, step, turn) {
+        const _x = x + direction[0] * step
+        const _y = y + direction[1] * step
+        console.log(_x, _y)
 
-      // if (directionsToGo.length > 0) {
-      //   console.log('そこには置けます。')
-      //   const directionsToGo = directions.filter()
-      // } else {
-      //   console.log('そこには置けません。')
-      // }
+        const isOnBoard = _x >= 0 && _x < 8 && _y >= 0 && _y < 8
+        if (!isOnBoard) { return 'none' }
+
+        if (board[_y][_x] === turn * -1) {
+          step += 1
+          return searchReturnDisk(direction, step, turn)
+        } else if (board[_y][_x] === turn && step > 1) {
+          return [ direction, step ]
+        } else {
+          return 'none'
+        }
+      }
 
       board[y][x] = turn
 
